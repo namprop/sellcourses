@@ -1,11 +1,5 @@
 import mongoose from "mongoose";
 
-if (!process.env.MONGO_URI) {
-  throw new Error("Please define MONGO_URI in .env.local");
-}
-
-const MONGO_URI = process.env.MONGO_URI;
-
 type MongooseCache = {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -23,6 +17,12 @@ const cache: MongooseCache = global.__mongooseCache || {
 global.__mongooseCache = cache;
 
 export async function connect() {
+  if (!process.env.MONGO_URI) {
+    throw new Error("Please define MONGO_URI in .env.local or environment variables");
+  }
+  
+  const MONGO_URI = process.env.MONGO_URI;
+
   if (cache.conn) return cache.conn;
 
   if (!cache.promise) {
